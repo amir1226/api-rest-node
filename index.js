@@ -1,7 +1,11 @@
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
-// dotenv.config();
+
+if (process.env.NODE_ENV !== "production") {
+    dotenv.config();
+}
+
 const port = process.env.PORT || 30666;
 
 const{notFound, errorHandler} = require('./middlewares/error.middleware')
