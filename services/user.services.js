@@ -27,3 +27,13 @@ exports.login = async({email, password}) => {
         throw new Error('Algo salio mal');
     }
 }
+
+exports.logout = async (user) => {
+    try {
+        user.expirationDate = Math.floor(new Date().getTime() / 1000);
+        await user.save();
+        return {message: 'Sesión cerrada exitosamente'};
+    } catch (err) {
+        console.error(err);throw new Error('Sesión inválida');
+    }
+}

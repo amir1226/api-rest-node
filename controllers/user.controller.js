@@ -1,4 +1,4 @@
-const {signUp, login} = require('../services/user.services');
+const {signUp, login, logout} = require('../services/user.services');
 const {prepareResponse} = require('../lib/utils')
 exports.signUp = async(req, res, next) => {
     try {
@@ -21,6 +21,18 @@ exports.login = async(req, res, next) => {
             .json(prepareResponse(userAuthenticated, 'user'))
             .end();
     } catch (error) {
+        next(error);
+    }
+}
+
+exports.logout = async (req, res, next) => {
+    try {
+        const {currentUser} = req;
+        const {message} = await logout(currentUser);
+        res.status(200)
+            .json(prepareResponse(message, 'message'))
+            .end();
+    }catch (error) {
         next(error);
     }
 }

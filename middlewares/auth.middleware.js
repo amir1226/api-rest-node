@@ -10,7 +10,7 @@ exports.restrict = async (req, res, next) => {
         const data = jwt.verify(pureToken, process.env.SECRET_KEY);
         const user = await UserModel.findById(data._id);
 
-        if(!user) throw new Error('Invalid token');
+        if(!user || data.exp !== user.expirationDate) throw new Error('Sesión expirada');
 
         req.currentUser = user;
         next();

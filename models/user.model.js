@@ -17,6 +17,11 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    expirationDate:{
+        type: Number,
+        required: true,
+        default: new Date().getTime()/1000
     }
 }, {
     timestamps:{
@@ -29,13 +34,18 @@ UserSchema.methods.toJSON = function(){
     const user = this;
     return {
         ...user._doc,
+        expirationDate: undefined,
         password: undefined
     }
 };
 
 UserSchema.methods.generateAuthToken = async function(){
     const user = this;
-    return jwt.sign({_id: user._id}, process.env.SECRET_KEY, {expiresIn: '4 hours'});
+    const token = jwt.sign({_id: user._id}, process.env.SECRET_KEY, {expiresIn: '4 hours'});
+    const infoDecoded = jwt.decode(token);
+    user.expirationDate = infoDecoded.exp;
+    await user.save();
+    return token;
 }
 
 UserSchema.pre('save', async function (next) {
